@@ -1,10 +1,5 @@
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.*;
+import java.util.*;
 
 
 public class Main {
@@ -16,6 +11,8 @@ public class Main {
 		int id = 0;
 		int idCounter = 0;
 		long timestamp = 1408512522146L;
+		ArrayList<MethodAndURL> collection = new ArrayList<MethodAndURL>();
+		
 		
 		String beforeOrder = "{\"id\": \"64d16f4f-320b-2234-6fa8-f031b8b29c6a\",\"name\": \"schoolmint\",\"description\": \"\",";
 		String order = "\"order\" :[";
@@ -34,11 +31,11 @@ public class Main {
 				continue;
 			}
 			methodAndUrl = getMethodAndURL(line, prevLine);
-//			System.out.println(methodAndUrl);
-			if (methodAndUrl == null) {
+			if (methodAndUrl == null || collection.contains(methodAndUrl)) {
 				prevLine = line;
 				continue;
 			}
+			collection.add(methodAndUrl);
 			requests += "{" + generateId(id) + methodAndUrl.getURL() + betweenURLAndMethod + 
 					methodAndUrl.getMethod() + betweenMethodAndName + methodAndUrl.getName() + afterName;
 			idCounter++;
@@ -62,8 +59,6 @@ public class Main {
 	}
 	
 	public static MethodAndURL getMethodAndURL(String line, String prevLine) {
-//		System.out.println("line: " + line);
-//		System.out.println("prevLine: " + prevLine);
 		int indexOfURL = line.indexOf("\"url\": \"");
 		int indexOfMethod = prevLine.indexOf("\"method\": \"");
 		if (indexOfURL == -1 || indexOfMethod == -1) {
@@ -71,7 +66,6 @@ public class Main {
 		}
 		String urlAddress = line.substring(indexOfURL);
 		String method = prevLine.substring(indexOfMethod);
-//		System.out.println(method + " : " + urlAddress);
 		if (urlAddress.indexOf("localhost:3081") == -1) {
 			return null;
 		}
@@ -80,7 +74,6 @@ public class Main {
 	
 	public static String generateId(int id) {
 		id++;
-		System.out.println(id);
 		return "\"id\":\"" + id + "\",";
 	}
 	

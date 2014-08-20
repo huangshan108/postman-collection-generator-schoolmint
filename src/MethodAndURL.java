@@ -1,4 +1,3 @@
-
 public class MethodAndURL {
 	private String method;
 	private String URL;
@@ -23,10 +22,16 @@ public class MethodAndURL {
 		} else {
 			return "\"name\":" + "\"" + URL.substring(URL.indexOf("//") + 2);
 		}
-		
 	}
 	
+	@Override
 	public String toString() {
 		return method + " : " + URL;
+	}
+	
+	@Override
+	public boolean equals(Object methodAndUrl) {
+		return this.getName().equals(((MethodAndURL) methodAndUrl).getName())
+				&& this.getMethod().equals(((MethodAndURL) methodAndUrl).getMethod());
 	}
 }
