@@ -1,7 +1,7 @@
 
 public class Request {
 	private int id;
-	private String name;
+	public String name;
 	private String request;
 	private String group;
 	

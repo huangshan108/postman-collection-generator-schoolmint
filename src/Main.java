@@ -51,7 +51,6 @@ public class Main {
 			
 			Folder folderObj = new Folder(generateFolderId(folderId), request.getGroup(), collectionName, collectionId);
 			//Add the new request into folder
-			System.out.println("###"+folderObj.getFolderName() + "--->" + allFolders.contains(folderObj));
 			if (allFolders.contains(folderObj)) {	//if the folder already been created
 				allFolders.get(allFolders.indexOf(folderObj)).addInFolder(request.getId());
 			} else { //create a new folder and add into it
@@ -61,6 +60,7 @@ public class Main {
 			idCounter++;
 			id++;
 			folderId++;
+			prevLine = line;
 		}
 		
 
@@ -72,9 +72,9 @@ public class Main {
 		
 		
 		String rawJSON = beforeOrder + order + folderString.substring(0, folderString.length() - 1) + afterOrder + beforeRequests + requests.substring(0, requests.length()-1) + afterRequests;
-//		JSONObject json = new JSONObject(rawJSON); 
-//		out.print(json.toString(4));
-		out.print(rawJSON);
+		JSONObject json = new JSONObject(rawJSON); 
+		out.print(json.toString(4));
+//		out.print(rawJSON);
 		out.close();  
 		in.close();
 		System.out.println("Done!");
@@ -95,12 +95,12 @@ public class Main {
 	}
 	
 	public static String generateId(int id) {
-		id++;
+//		id++;
 		return "\"id\":\"" + id + "\",";
 	}
 	
 	public static String generateFolderId(int folderId) {
-		folderId++;
+//		folderId++;
 		return "\"" + folderId + "\",";
 	}
 }
