@@ -51,6 +51,7 @@ public class Main {
 			
 			Folder folderObj = new Folder(generateFolderId(folderId), request.getGroup(), collectionName, collectionId);
 			//Add the new request into folder
+			System.out.println("###"+folderObj.getFolderName() + "--->" + allFolders.contains(folderObj));
 			if (allFolders.contains(folderObj)) {	//if the folder already been created
 				allFolders.get(allFolders.indexOf(folderObj)).addInFolder(request.getId());
 			} else { //create a new folder and add into it
