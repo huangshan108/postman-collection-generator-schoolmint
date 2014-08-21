@@ -13,6 +13,34 @@ public class Folder {
 		this.folderName = folderName;
 		this.collectionName = collectiionName;
 		this.collectionId = collectionId;
-		this.order = new ArrayList<>();
+		this.order = new ArrayList<String>();
+	}
+	
+	public void addInFolder(String id) {
+		order.add(id);
+	}
+	
+	public String getOrderList() {
+		String orderList = "";
+		for (String s : order) {
+			orderList += s;
+		}
+		return orderList.substring(0, orderList.length() - 1);
+	}
+	
+	public String getFolderName() {
+		return folderName;
+	}
+	
+	@Override
+	public String toString() {
+		return "{ \"id\":" + folderId + folderName + "\"description\": \"\",\"order\":["
+				+ getOrderList() + "],\"collection_name\":\"" + collectionName + "\",\"collection_id\":" 
+				+ collectionId + "},";
+	}
+	
+	@Override 
+	public boolean equals(Object anotherFolder) {
+		return this.getFolderName().equals(((Folder) anotherFolder).getFolderName());
 	}
 }

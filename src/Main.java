@@ -1,10 +1,10 @@
 import java.io.*;
 import java.util.*;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Main {
+	
 	public static void main(String[] args) throws IOException, JSONException {
 		BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream("/Users/Shan/Documents/workspace_java/Postman/src/parent.json"), "UTF-8"));  
 		PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream("/Users/Shan/Documents/workspace_java/Postman/src/parent_output.json"), "UTF-8"));  
@@ -12,14 +12,18 @@ public class Main {
 		MethodAndURL methodAndUrl;
 		int id = 0;
 		int idCounter = 0;
+		int folderId = 100000;
 		long timestamp = 1408512522146L;
 		ArrayList<MethodAndURL> collection = new ArrayList<MethodAndURL>();
+		ArrayList<Folder> allFolders = new ArrayList<Folder>();
 		Request request;
 		
 		String collectionId = "\"64d16f4f-320b-2234-6fa8-f031b8b29c6a\"";
-		String beforeOrder = "{\"id\": " + collectionId + ",\"name\": \"schoolmint\",\"description\": \"\",";
-		String order = "\"order\" :[";
-		String afterOrder = "\"folders\": [], \"timestamp\":" + timestamp + ",\"synced\": false,";
+		String collectionName = "schoolmint";
+		String beforeOrder = "{\"id\": " + collectionId + ",\"name\": \"" + collectionName + "\",\"description\": \"\",";
+		String order = "\"order\" :[],";
+		String folderString = "\"folders\" :[";
+		String afterOrder = "],\"timestamp\":" + timestamp + ",\"synced\": false,";
 		String beforeRequests = "\"requests\": [";
 		String requests = "";
 		String requestString = "";
@@ -44,17 +48,36 @@ public class Main {
 					methodAndUrl.getMethod() + betweenMethodAndName + methodAndUrl.getName() + afterName;
 			request = new Request(id, methodAndUrl.getName(), requestString);
 			requests += request;
+			
+			Folder folderObj = new Folder(generateFolderId(folderId), methodAndUrl.getName(), collectionName, collectionId);
+			//Add the new request into folder
+			if (allFolders.contains(folderObj)) {	//if the folder already been created
+				allFolders.get(allFolders.indexOf(folderObj)).addInFolder(request.getId());
+			} else { //create a new folder and add into it
+				folderObj.addInFolder(request.getId());
+				allFolders.add(folderObj);
+			}
 			idCounter++;
 			id++;
+			folderId++;
 		}
-		for (int i = 1; i < idCounter; i++) {
-			order += "\"" + i + "\",";
-		}
-		order += "\"" + idCounter + "\"],";
 		
-		String rawJSON = beforeOrder + order + afterOrder + beforeRequests + requests.substring(0, requests.length()-1) + afterRequests;
+//		//For add orders only
+//		for (int i = 1; i < idCounter; i++) {
+//			order += "\"" + i + "\",";
+//		}
+//		order += "\"" + idCounter + "\"],";
+		
+		//creating folders
+		for (Folder f: allFolders) {
+			folderString += f;
+		}
+		
+		
+		String rawJSON = beforeOrder + order + folderString.substring(0, folderString.length() - 1) + afterOrder + beforeRequests + requests.substring(0, requests.length()-1) + afterRequests;
 		JSONObject json = new JSONObject(rawJSON); 
 		out.print(json.toString(4));
+		out.print(rawJSON);
 		out.close();  
 		in.close();
 		System.out.println("Done!");
@@ -79,4 +102,8 @@ public class Main {
 		return "\"id\":\"" + id + "\",";
 	}
 	
+	public static String generateFolderId(int folderId) {
+		folderId++;
+		return "\"" + folderId + "\",";
+	}
 }

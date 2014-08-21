@@ -21,6 +21,10 @@ public class Request {
 		return group;
 	}
 	
+	public String getId() {
+		return "\"" + id + "\",";
+	}
+	
 	@Override
 	public String toString() {
 		return request;
