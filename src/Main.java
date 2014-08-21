@@ -1,9 +1,11 @@
 import java.io.*;
 import java.util.*;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class Main {
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, JSONException {
 		BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream("/Users/Shan/Documents/workspace_java/Postman/src/parent.json"), "UTF-8"));  
 		PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream("/Users/Shan/Documents/workspace_java/Postman/src/parent_output.json"), "UTF-8"));  
 		String line, prevLine = "";  
@@ -12,13 +14,15 @@ public class Main {
 		int idCounter = 0;
 		long timestamp = 1408512522146L;
 		ArrayList<MethodAndURL> collection = new ArrayList<MethodAndURL>();
+		Request request;
 		
-		
-		String beforeOrder = "{\"id\": \"64d16f4f-320b-2234-6fa8-f031b8b29c6a\",\"name\": \"schoolmint\",\"description\": \"\",";
+		String collectionId = "\"64d16f4f-320b-2234-6fa8-f031b8b29c6a\"";
+		String beforeOrder = "{\"id\": " + collectionId + ",\"name\": \"schoolmint\",\"description\": \"\",";
 		String order = "\"order\" :[";
 		String afterOrder = "\"folders\": [], \"timestamp\":" + timestamp + ",\"synced\": false,";
 		String beforeRequests = "\"requests\": [";
 		String requests = "";
+		String requestString = "";
 		String afterRequests = "]}";
 		
 		String betweenURLAndMethod = "\"pathVariables\": {},\"preRequestScript\": \"\", ";
@@ -36,8 +40,10 @@ public class Main {
 				continue;
 			}
 			collection.add(methodAndUrl);
-			requests += "{" + generateId(id) + methodAndUrl.getURL() + betweenURLAndMethod + 
+			requestString = "{" + generateId(id) + methodAndUrl.getURL() + betweenURLAndMethod + 
 					methodAndUrl.getMethod() + betweenMethodAndName + methodAndUrl.getName() + afterName;
+			request = new Request(id, methodAndUrl.getName(), requestString);
+			requests += request;
 			idCounter++;
 			id++;
 		}
@@ -46,13 +52,9 @@ public class Main {
 		}
 		order += "\"" + idCounter + "\"],";
 		
-		out.print(beforeOrder);
-		out.print(order);
-		out.print(afterOrder);
-		out.print(beforeRequests);
-		out.print(requests.substring(0, requests.length()-1));
-		out.print(afterRequests);
-		
+		String rawJSON = beforeOrder + order + afterOrder + beforeRequests + requests.substring(0, requests.length()-1) + afterRequests;
+		JSONObject json = new JSONObject(rawJSON); 
+		out.print(json.toString(4));
 		out.close();  
 		in.close();
 		System.out.println("Done!");
