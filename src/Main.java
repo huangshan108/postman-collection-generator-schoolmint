@@ -49,7 +49,7 @@ public class Main {
 			request = new Request(id, methodAndUrl.getName(), requestString);
 			requests += request;
 			
-			Folder folderObj = new Folder(generateFolderId(folderId), methodAndUrl.getName(), collectionName, collectionId);
+			Folder folderObj = new Folder(generateFolderId(folderId), request.getGroup(), collectionName, collectionId);
 			//Add the new request into folder
 			if (allFolders.contains(folderObj)) {	//if the folder already been created
 				allFolders.get(allFolders.indexOf(folderObj)).addInFolder(request.getId());
@@ -62,11 +62,7 @@ public class Main {
 			folderId++;
 		}
 		
-//		//For add orders only
-//		for (int i = 1; i < idCounter; i++) {
-//			order += "\"" + i + "\",";
-//		}
-//		order += "\"" + idCounter + "\"],";
+
 		
 		//creating folders
 		for (Folder f: allFolders) {
@@ -75,8 +71,8 @@ public class Main {
 		
 		
 		String rawJSON = beforeOrder + order + folderString.substring(0, folderString.length() - 1) + afterOrder + beforeRequests + requests.substring(0, requests.length()-1) + afterRequests;
-		JSONObject json = new JSONObject(rawJSON); 
-		out.print(json.toString(4));
+//		JSONObject json = new JSONObject(rawJSON); 
+//		out.print(json.toString(4));
 		out.print(rawJSON);
 		out.close();  
 		in.close();

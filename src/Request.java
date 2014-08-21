@@ -10,15 +10,18 @@ public class Request {
 		this.name = name;
 		this.request = request;
 		int firstIndex = name.indexOf('/');
-		int lastIndex = name.indexOf('.', firstIndex + 1) == -1? name.indexOf('.', firstIndex + 1) : name.indexOf('/', firstIndex + 1);
+		int lastIndex = name.indexOf('/', firstIndex + 1);
 		if (lastIndex == -1) {
-			lastIndex = name.length();
+			lastIndex = name.indexOf(".json");
+			if (lastIndex == -1) {
+				lastIndex = name.length() - 2;
+			}
 		}
 		this.group = name.substring(firstIndex, lastIndex);
 	}
 	
 	public String getGroup() {
-		return group;
+		return "\"name\":\"" + group + "\",";
 	}
 	
 	public String getId() {
