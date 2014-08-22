@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PostmanTemplate implements ActionListener {
+public class PostmanCollectionGenerator implements ActionListener {
 
 	
 	JTextField collectionNameField;
@@ -24,7 +24,7 @@ public class PostmanTemplate implements ActionListener {
 	boolean minifyOutput;
 
     public static void main (String [] args) {
-    	PostmanTemplate gui = new PostmanTemplate();
+    	PostmanCollectionGenerator gui = new PostmanCollectionGenerator();
         gui.go();
     }
 
@@ -176,7 +176,7 @@ public class PostmanTemplate implements ActionListener {
 			return;
 		}
     	
-    	Main m = new Main(inputFilePath, collectionName, envsMap.get(buttonUtils.getSelectedButtonText(envs)), minifyOutput);
+    	Main m = new Main(inputFilePath, collectionName, envsMap.get(buttonUtils.getSelectedButtonText(envs)), minOutput.isSelected());
     	try {
 			m.start();
 		} catch (JSONException e) {
