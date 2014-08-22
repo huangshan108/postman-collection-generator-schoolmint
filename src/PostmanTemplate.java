@@ -1,8 +1,13 @@
 import javax.swing.*;
 
+import org.json.JSONException;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PostmanTemplate implements ActionListener {
 
@@ -13,6 +18,7 @@ public class PostmanTemplate implements ActionListener {
 	ButtonGroup envs;
 	GroupButtonUtils buttonUtils;
 	JTextField portField;
+	JCheckBox minOutput;
 	
 	String inputFilePath, collectionName, backendAPI;
 	boolean minifyOutput;
@@ -97,12 +103,12 @@ public class PostmanTemplate implements ActionListener {
 				int result = fileChooser.showOpenDialog(null);
 				if (result == JFileChooser.APPROVE_OPTION) {
 				    File selectedFile = fileChooser.getSelectedFile();
-				    System.out.println(selectedFile.getAbsolutePath());
+				    inputFilePath = selectedFile.getAbsolutePath();
 				}
 			}
 		});
     	
-    	JCheckBox minOutput = new JCheckBox("Minify output file.");
+    	minOutput = new JCheckBox("Minify output file.");
     	bottomPanel.add(BorderLayout.WEST, minOutput);
     	
     	JLabel label = new JLabel("Please enter the collection name. This will be the name of your Postman collection.");
@@ -145,8 +151,45 @@ public class PostmanTemplate implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent event) {
-		JOptionPane.showMessageDialog(null, buttonUtils.getSelectedButtonText(envs));
-		String collectionName = collectionNameField.getText();
+    	
+
+
+    	
+    	Map<String, String> envsMap = new HashMap<String, String>();
+    	envsMap.put("dev", "api.dev.schoolmint.net");
+    	envsMap.put("test", "api-staging.schoolmint.net");
+    	envsMap.put("staging", "api-staging.schoolmint.net");
+    	envsMap.put("demo", "api.demo6.schoolmint.net");
+    	envsMap.put("qa", "api.qa.schoolmint.net");
+    	envsMap.put("qa2", "api.qa2.schoolmint.net");
+    	envsMap.put("prod", "api-prod.schoolmint.net");
+    	envsMap.put("dis_lookup_dev", "dev.districtlookup.schoolmint.net");
+    	envsMap.put("localhost", "localhost:" + portField.getText());
+    	collectionName = collectionNameField.getText();
+    	
+    	if (inputFilePath == null 
+    			|| collectionName == null 
+    			|| envsMap.get(buttonUtils.getSelectedButtonText(envs)) == null 
+    			|| Integer.parseInt(portField.getText()) < 1000 
+    			|| Integer.parseInt(portField.getText()) > 9999) {
+    		JOptionPane.showMessageDialog(null, "Invalid Input.");
+			return;
+		}
+    	
+    	Main m = new Main(inputFilePath, collectionName, envsMap.get(buttonUtils.getSelectedButtonText(envs)), minifyOutput);
+    	try {
+			m.start();
+		} catch (JSONException e) {
+			JOptionPane.showMessageDialog(null, "Error When Generating JSON ouput.");
+			return;
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, "Error When Open Input File.");
+			return;
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Unknown Error Accured.");
+			return;
+		}
+		JOptionPane.showMessageDialog(null, "Done!");
     }
 }
 

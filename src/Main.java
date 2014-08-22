@@ -5,16 +5,25 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Main {
-	private static String collectionName;
-	private static String backendAPI;
+	private String collectionName;
+	private String backendAPI;
+	private String inputFilePath;
+	private boolean minify;
+	
+	public Main(String inputFilePath, String collectionName, String backendAPI, boolean minify) {
+		this.inputFilePath = inputFilePath;
+		this.collectionName = collectionName;
+		this.backendAPI = backendAPI;
+		this.minify = minify;
+	}
 	
 	public void start() throws JSONException, IOException {
-		BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream("/Users/Shan/Documents/workspace_java/Postman/src/admin.json"), "UTF-8"));  
-		PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream("/Users/Shan/Documents/workspace_java/Postman/src/admin_output.json"), "UTF-8"));  
+		BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(inputFilePath), "UTF-8"));  
+		PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(inputFilePath.substring(0, inputFilePath.lastIndexOf('/') + 1) + "postman.json"), "UTF-8"));  
 		String line, prevLine = "";  
 		MethodAndURL methodAndUrl;
 		int id = 0;
-		int folderId = 100000;
+		int folderId = 1000000;
 		long timestamp = 1408512522146L;
 		ArrayList<MethodAndURL> collection = new ArrayList<MethodAndURL>();
 		ArrayList<Folder> allFolders = new ArrayList<Folder>();
@@ -22,7 +31,6 @@ public class Main {
 		
 		SessionIdentifierGenerator SID = new SessionIdentifierGenerator();
 		String collectionId = "\"" + SID.nextSessionId() + "\"";
-		collectionName = "schoolmint";
 		String beforeOrder = "{\"id\": " + collectionId + ",\"name\": \"" + collectionName + "\",\"description\": \"\",";
 		String order = "\"order\" :[],";
 		String folderString = "\"folders\" :[";
@@ -74,20 +82,18 @@ public class Main {
 		
 		
 		String rawJSON = beforeOrder + order + folderString.substring(0, folderString.length() - 1) + afterOrder + beforeRequests + requests.substring(0, requests.length()-1) + afterRequests;
-		JSONObject json = new JSONObject(rawJSON); 
-		out.print(json.toString(4));
-//		out.print(rawJSON);
+		
+		if (minify) {
+			out.print(rawJSON);
+		} else {
+			JSONObject json = new JSONObject(rawJSON); 
+			out.print(json.toString(4));
+		}
 		out.close();  
 		in.close();
-		System.out.println("Done!");
 	}
 	
-	public static void main(String[] args) throws IOException, JSONException {
-		Main m = new Main();
-		m.start();
-	}
-	
-	public static MethodAndURL getMethodAndURL(String line, String prevLine) {
+	public MethodAndURL getMethodAndURL(String line, String prevLine) {
 		int indexOfURL = line.indexOf("\"url\": \"");
 		int indexOfMethod = prevLine.indexOf("\"method\": \"");
 		if (indexOfURL == -1 || indexOfMethod == -1) {
@@ -95,7 +101,7 @@ public class Main {
 		}
 		String urlAddress = line.substring(indexOfURL);
 		String method = prevLine.substring(indexOfMethod);
-		if (urlAddress.indexOf("localhost:3081") == -1) {
+		if (urlAddress.indexOf(backendAPI) == -1) {
 			return null;
 		}
 		return new MethodAndURL(method, urlAddress);
