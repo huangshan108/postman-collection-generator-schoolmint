@@ -41,7 +41,6 @@ public class Folder {
 	
 	@Override 
 	public boolean equals(Object anotherFolder) {
-//		System.out.println(this.getFolderName() + " : " + ((Folder) anotherFolder).getFolderName());
 		return this.getFolderName().equals(((Folder) anotherFolder).getFolderName());
 	}
 }

@@ -1,25 +1,28 @@
 import java.io.*;
 import java.util.*;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Main {
+	private static String collectionName;
+	private static String backendAPI;
 	
-	public static void main(String[] args) throws IOException, JSONException {
-		BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream("/Users/Shan/Documents/workspace_java/Postman/src/parent.json"), "UTF-8"));  
-		PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream("/Users/Shan/Documents/workspace_java/Postman/src/parent_output.json"), "UTF-8"));  
+	public void start() throws JSONException, IOException {
+		BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream("/Users/Shan/Documents/workspace_java/Postman/src/admin.json"), "UTF-8"));  
+		PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream("/Users/Shan/Documents/workspace_java/Postman/src/admin_output.json"), "UTF-8"));  
 		String line, prevLine = "";  
 		MethodAndURL methodAndUrl;
 		int id = 0;
-		int idCounter = 0;
 		int folderId = 100000;
 		long timestamp = 1408512522146L;
 		ArrayList<MethodAndURL> collection = new ArrayList<MethodAndURL>();
 		ArrayList<Folder> allFolders = new ArrayList<Folder>();
 		Request request;
 		
-		String collectionId = "\"64d16f4f-320b-2234-6fa8-f031b8b29c6a\"";
-		String collectionName = "schoolmint";
+		SessionIdentifierGenerator SID = new SessionIdentifierGenerator();
+		String collectionId = "\"" + SID.nextSessionId() + "\"";
+		collectionName = "schoolmint";
 		String beforeOrder = "{\"id\": " + collectionId + ",\"name\": \"" + collectionName + "\",\"description\": \"\",";
 		String order = "\"order\" :[],";
 		String folderString = "\"folders\" :[";
@@ -31,7 +34,7 @@ public class Main {
 		
 		String betweenURLAndMethod = "\"pathVariables\": {},\"preRequestScript\": \"\", ";
 		String betweenMethodAndName = "\"data\": [],\"dataMode\": \"params\",";
-		String afterName = "\"description\": \"\",\"descriptionFormat\": \"html\", \"time\": 1408512881534,\"version\": 2,\"responses\": [],\"tests\": \"\",\"collectionId\": \"64d16f4f-320b-2234-6fa8-f031b8b29c6a\",\"synced\": false},";
+		String afterName = "\"description\": \"\",\"descriptionFormat\": \"html\", \"time\": 1408512881534,\"version\": 2,\"responses\": [],\"tests\": \"\",\"collectionId\": " + collectionId + ",\"synced\": false},";
 		
 		
 		while ((line = in.readLine()) != null) {
@@ -57,7 +60,6 @@ public class Main {
 				folderObj.addInFolder(request.getId());
 				allFolders.add(folderObj);
 			}
-			idCounter++;
 			id++;
 			folderId++;
 			prevLine = line;
@@ -80,6 +82,11 @@ public class Main {
 		System.out.println("Done!");
 	}
 	
+	public static void main(String[] args) throws IOException, JSONException {
+		Main m = new Main();
+		m.start();
+	}
+	
 	public static MethodAndURL getMethodAndURL(String line, String prevLine) {
 		int indexOfURL = line.indexOf("\"url\": \"");
 		int indexOfMethod = prevLine.indexOf("\"method\": \"");
@@ -95,12 +102,10 @@ public class Main {
 	}
 	
 	public static String generateId(int id) {
-//		id++;
 		return "\"id\":\"" + id + "\",";
 	}
 	
 	public static String generateFolderId(int folderId) {
-//		folderId++;
 		return "\"" + folderId + "\",";
 	}
 }
